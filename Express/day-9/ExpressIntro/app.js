@@ -17,6 +17,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
+    res.cookie('mycookie', 'myValue', {
+        httpOnly: false, // allow JS to access for demo (not for prod)
+        sameSite: 'lax', // default, but explicit
+        secure: false    // allow over http for localhost
+    });
+    console.log(res.getHeaders());
     res.send('<span style="color: blue;">Hello, Express!</span>');
 });
 
