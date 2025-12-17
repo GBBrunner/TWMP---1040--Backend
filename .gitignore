@@ -3,3 +3,4 @@ node_modules/
 # Ignore all key files for security
 *.key
 *secret.txt
+*.env

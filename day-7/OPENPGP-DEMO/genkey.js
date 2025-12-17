@@ -10,7 +10,7 @@ async function generate() {
     passphrase: "simba",
     format: 'armored' // output key format, defaults to 'armored' (other options: 'binary' or 'object')
   });
-  fs.writeFileSync("./private-Garrett-Brunner.key", privateKey);
+  fs.writeFileSync("./private.key", privateKey);
   fs.writeFileSync("./public-Garrett-Brunner.key", publicKey);
   console.log(`keys generated and written to file...`);
 }

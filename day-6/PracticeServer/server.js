@@ -29,21 +29,52 @@ const server = net.createServer((client) => {
     client.write('Welcome to the chat room!\n');
     client.write('What is your username?\n');
 
-    client.on('data', (data) => {
-        const username = data.toString().trim();
-        if (!username) {
-            client.write('Please provide a valid username.\nWhat is your username?\n');
-            return;
-        }
-        if (users.some(u => u.username === username)) {
-            client.write('Username already taken. Please choose another one.\nWhat is your username?\n');
-            return;
-        }
-        users.push({ username, client });
-        console.log(`NewUser: ${username}`);
-        client.write(`Hello, ${username}! You can start chatting now.\n`);
-        // Here you can add more chat logic
-    });
+    let username;
+        client.on('data', (data) => {
+            if (!username){
+                username = data.toString().trim();
+                if (!username) {
+                    client.write('Please provide a valid username.\nWhat is your username?\n');
+                    return;
+                }
+                if (users.some(u => u.username === username)) {
+                    client.write('Username already taken. Please choose another one.\nWhat is your username?\n');
+                    username = undefined;
+                    return;
+                }
+                users.push({ username, client });
+                console.log(`NewUser: ${username}`);
+                users.forEach(u => {
+                    if (u.client !== client) {
+                        u.client.write(`User ${username} has joined the chat.\n`);
+                    }
+                });
+                client.write(`Hello, ${username}! You can start chatting now.\n`);
+                return;
+            }
+            const message = data.toString().trim();
+            if (message.length > 0) {
+                // Log to server
+                console.log(`${username}: ${message}`);
+                // Broadcast to all other users
+                users.forEach(u => {
+                    u.client.write(`${username}: ${message}\n`);
+                });
+            }
+        });
+
+        client.on('end', () => {
+            if (username) {
+                // Remove user from users array
+                users = users.filter(u => u.client !== client);
+                const disconnectMsg = `User ${username} has disconnected.`;
+                console.log(disconnectMsg);
+                // Notify all remaining clients
+                users.forEach(u => {
+                    u.client.write(disconnectMsg + '\n');
+                });
+            }
+        });
 });
 
 function startServer(port) {
