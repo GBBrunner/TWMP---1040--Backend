@@ -18,9 +18,8 @@ app.use(express.static('public'));
 
 app.get('/', (req, res) => {
     res.cookie('mycookie', 'myValue', {
-        httpOnly: false, // allow JS to access for demo (not for prod)
-        sameSite: 'lax', // default, but explicit
-        secure: false    // allow over http for localhost
+        httpOnly: true, // allow JS to access for demo (not for prod)
+        maxAge: 120000 // 2 minutes
     });
     console.log(res.getHeaders());
     res.send('<span style="color: blue;">Hello, Express!</span>');
@@ -37,9 +36,24 @@ app.get('/file', (req, res) => {
     });
 });
 app.post('/user', (req, res) => {
-    const firstname = req.body.firstname;
-    const lastname = req.body.lastname;
-    res.send(`Welcome, ${firstname} ${lastname}`);
+    const firstname = req.body.firstName;
+    const lastname = req.body.lastName;
+    const username = req.body.username;
+    res.send(`Welcome, ${firstname} ${lastname} (${username})`);
+});
+app.get('/{apple}pie/:count', (req, res) => {
+    const count = req.params.count;
+    res.send(`Pies requested: ${count}`);
+});
+app.get(/.*fly$/, function (req, res) {
+    res.send(`${req.path} contains /.*fly$/`);
+});
+app.get('/classTime/:from-:to', (req, res) => {
+    let from = req.params.from;
+    let to = req.params.to;
+    let msg = `class begins at ${from} and ends at ${to}`;
+    console.log(req.params);
+    res.send(`${msg}`);
 });
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
