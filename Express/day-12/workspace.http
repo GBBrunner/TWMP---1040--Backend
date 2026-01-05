@@ -1,0 +1,21 @@
+GET https://localhost:3000/users/Garr
+###
+GET http://localhost:3000/users?userId=12345
+###
+POST http://localhost:3000/users/create
+Content-Type: application/json
+
+{
+    "userId" : "ctdalton",
+    "firstName" : "Curtis",
+    "lastName" : "Dalton",
+    "password" : "qwerty123"
+}
+###
+POST http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "userId" : "ctdalton",
+    "password" : "qwerty123"
+}
